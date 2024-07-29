@@ -107,11 +107,15 @@ pipeline {
 }
 
 def getTemplates() {
-    // Fetch the list of CloudFormation templates from the checked out repository
-    return sh(
-        script: "ls *.yaml",
-        returnStdout: true
-    ).trim().split('\n')
+    def templates = []
+    node {
+        // Execute shell command to get a list of .yaml files
+        templates = sh(
+            script: 'ls *.yaml',
+            returnStdout: true
+        ).trim().split('\n')
+    }
+    return templates
 }
 
 def getStackName(templateFile) {
