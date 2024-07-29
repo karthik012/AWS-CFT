@@ -106,17 +106,19 @@ pipeline {
     }
 }
 
+// Function to fetch the list of CloudFormation templates from the checked out repository
 def getTemplates() {
     def templates = []
     node {
         // Execute shell command to get a list of .yaml files
-        templates = sh(
-            script: 'ls *.yaml',
+        templates = bat(
+            script: 'dir /b *.yaml',
             returnStdout: true
         ).trim().split('\n')
     }
     return templates
 }
+
 
 def getStackName(templateFile) {
     // Derive stack name from the template file name
