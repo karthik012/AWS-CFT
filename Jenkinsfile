@@ -19,7 +19,7 @@ pipeline {
                     print(templateFile)
 
                     withAWS(region: "${env.AWS_REGION}", credentials: 'my-aws-account') {
-                        sh """
+                        bat """
                         aws cloudformation validate-template --template-body file://${templateFile}
                         """
                     }
@@ -97,7 +97,7 @@ pipeline {
     post {
         always {
             //cleanWs()
-            sh """
+            bat """
             echo "cleanup"
             """
         }
