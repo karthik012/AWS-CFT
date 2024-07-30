@@ -6,7 +6,7 @@ pipeline {
     }
 
     parameters {
-        choice(name: 'CFT_TEMPLATE', choices: getTemplates(), description: 'Select CloudFormation Template')
+        string(name: 'CFT_TEMPLATE', defaultValue: 'NA', description: 'Enter CloudFormation Template')
         choice(name: 'ACTION', choices: ['create', 'update', 'delete'], description: 'Select Action')
     }
 
