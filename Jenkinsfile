@@ -37,7 +37,7 @@ pipeline {
                     def templateFile = params.CFT_TEMPLATE
 
                     withAWS(region: "${env.AWS_REGION}", credentials: 'my-aws-account') {
-                        def changeset = sh(
+                        def changeset = bat(
                             script: """
                             aws cloudformation create-change-set \
                                 --stack-name ${stackName} \
@@ -53,7 +53,7 @@ pipeline {
 
                         echo "Changeset ID: ${changeset}"
 
-                        def describeChangeset = sh(
+                        def describeChangeset = bat(
                             script: """
                             aws cloudformation describe-change-set \
                                 --change-set-name ${changeset}
@@ -96,10 +96,7 @@ pipeline {
 
     post {
         always {
-            //cleanWs()
-            bat """
-            echo "cleanup"
-            """
+            cleanWs()
         }
     }
 }
