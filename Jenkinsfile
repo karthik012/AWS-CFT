@@ -11,12 +11,6 @@ pipeline {
     }
 
     stages {
-        stage('SCM Checkout') {
-            steps {
-                // Checkout your Git repository containing the CloudFormation templates
-                git 'https://github.com/karthik012/AWS-CFT.git'
-            }
-        }
         
         stage('Validate CloudFormation Template') {
             steps {
