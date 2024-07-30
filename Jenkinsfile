@@ -15,7 +15,8 @@ pipeline {
         stage('Validate CloudFormation Template') {
             steps {
                 script {
-                    def templateFile = params.CFT_TEMPLATE
+                    def templateFile = "${CFT_TEMPLATE}"
+                    print(templateFile)
 
                     withAWS(region: "${env.AWS_REGION}", credentials: 'my-aws-account') {
                         sh """
