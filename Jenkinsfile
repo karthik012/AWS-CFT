@@ -37,7 +37,7 @@ pipeline {
                     def templateFile = params.CFT_TEMPLATE
 
                     withAWS(region: "${env.AWS_REGION}", credentials: 'my-aws-account') {
-                    def changeset = bat(
+                    env.CHANGESET = bat(
                         script: """
                         @echo off
                         setlocal
@@ -56,14 +56,14 @@ pipeline {
                         """,
                         returnStdout: true
                     ).trim()
-                    echo "Changeset ID: ${changeset}"
+                    echo "Change Set ID: ${env.CHANGESET}"
                     def describeChangeset = bat(
                         script: """
                         @echo off
                         setlocal
                     
                         aws cloudformation describe-change-set ^
-                            --change-set-name ${changeset}
+                            --change-set-name ${env.CHANGESET}
                         """,
                         returnStdout: true
                     ).trim() 
@@ -89,9 +89,20 @@ pipeline {
                     def templateFile = params.CFT_TEMPLATE
 
                     withAWS(region: "${env.AWS_REGION}", credentials: 'my-aws-account') {
-                        if (params.ACTION == 'create' || params.ACTION == 'update') {
+                        if (params.ACTION == 'create') {
+                            bat(
+                                script: """
+                                @echo off
+                                setlocal
+                                aws cloudformation execute-change-set ^
+                                    --change-set-name ${env.CHANGESET}
+                                """,
+                                returnStdout: true
+                            )
+                        }else if(params.ACTION == 'update'){
                             cfnUpdate(stack: stackName, file: templateFile)
-                        } else if (params.ACTION == 'delete') {
+                        }
+                        else if (params.ACTION == 'delete') {
                             cfnDelete(stack: stackName)
                         }
                     }
