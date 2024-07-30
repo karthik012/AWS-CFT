@@ -37,31 +37,37 @@ pipeline {
                     def templateFile = params.CFT_TEMPLATE
 
                     withAWS(region: "${env.AWS_REGION}", credentials: 'my-aws-account') {
-                        def changeset = bat(
-                            script: """
-                            aws cloudformation create-change-set \
-                                --stack-name ${stackName} \
-                                --template-body file://${templateFile} \
-                                --change-set-name my-changeset \
-                                --change-set-type ${params.ACTION.toUpperCase()} \
-                                --capabilities CAPABILITY_NAMED_IAM \
-                                --query 'Id' \
-                                --output text
-                            """,
-                            returnStdout: true
-                        ).trim()
-
-                        echo "Changeset ID: ${changeset}"
-
-                        def describeChangeset = bat(
-                            script: """
-                            aws cloudformation describe-change-set \
-                                --change-set-name ${changeset}
-                            """,
-                            returnStdout: true
-                        )
-                        
-                        echo "Changeset Details:\n${describeChangeset}"
+                    def changeset = bat(
+                        script: """
+                        @echo off
+                        setlocal
+                        set AWS_STACK_NAME=${stackName}
+                        set AWS_TEMPLATE_FILE=${templateFile}
+                        set AWS_CHANGE_SET_TYPE=${params.ACTION.toUpperCase()}
+                    
+                        aws cloudformation create-change-set ^
+                            --stack-name %AWS_STACK_NAME% ^
+                            --template-body file://%AWS_TEMPLATE_FILE% ^
+                            --change-set-name my-changeset ^
+                            --change-set-type %AWS_CHANGE_SET_TYPE% ^
+                            --capabilities CAPABILITY_NAMED_IAM ^
+                            --query Id ^
+                            --output text
+                        """,
+                        returnStdout: true
+                    ).trim()
+                    echo "Changeset ID: ${changeset}"
+                    def describeChangeset = bat(
+                        script: """
+                        @echo off
+                        setlocal
+                    
+                        aws cloudformation describe-change-set ^
+                            --change-set-name ${changeset}
+                        """,
+                        returnStdout: true
+                    ).trim() 
+                    echo "Changeset Details:\n${describeChangeset}"
                     }
                 }
             }
